@@ -11,7 +11,7 @@ class ProductFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create();
-        for ($i = 1; $i <= 15; $i++)
+        for ($i = 1; $i <= 10; $i++)
         {
             $product = new Product();
 

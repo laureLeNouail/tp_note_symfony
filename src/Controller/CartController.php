@@ -26,6 +26,8 @@ class CartController extends AbstractController
             $products[] = $productRepository->find($id);
         }
 
+        
+
         $command=new Command();
         $commandForm=$this->createForm(CommandType::class, $command);
         
