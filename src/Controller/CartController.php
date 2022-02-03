@@ -20,16 +20,21 @@ class CartController extends AbstractController
     public function index(SessionInterface $session, ProductRepository $productRepository): Response
     {
         $cart = $session->get('panier', []);
-        $products = [];
+        $command=new Command();
         foreach($cart as $id => $quantity)
         {
-            $products[] = $productRepository->find($id);
+            $products = $productRepository->find($id);
+            $command->addproduct($products);
         }
-
         
-
-        $command=new Command();
         $commandForm=$this->createForm(CommandType::class, $command);
+        $request=Request::createFromGlobals();
+        $commandForm->handleRequest($request);
+
+
+        if($commandForm = isSubmitted()){
+
+        }
         
         return $this->render('cart/index.html.twig', [
             'product' => $products,
