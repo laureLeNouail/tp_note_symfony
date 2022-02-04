@@ -11,13 +11,14 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Product;
 use App\Entity\Command;
 use App\Form\CommandType;
+use Doctrine\ORM\EntityManagerInterface;
 
 class CartController extends AbstractController
 {
     /**
      * @Route("/cart", name="cart")
      */
-    public function index(SessionInterface $session, ProductRepository $productRepository): Response
+    public function index(SessionInterface $session, ProductRepository $productRepository, EntityManagerInterface $manager): Response
     {
         $cart = $session->get('panier', []);
         $products=[]; 
@@ -37,14 +38,26 @@ class CartController extends AbstractController
         $commandForm->handleRequest($request);
 
 
-        // if($commandForm = isSubmitted()){
+        if($commandForm->isSubmitted() && $commandForm->isValid()){
+            $command->setCreatedAt(new \Datetime);
 
-        // }
+            foreach($cart as $key =>$product){
+                $produit= $productRepository->find($key);
+                $command->addProduct($produit);
+                unset($cart[$key]);
+            }
+
+            $session->set('panier', $cart);
+            $manager->persist($command);
+
+            $manager->flush();
+        }
         
         return $this->render('cart/index.html.twig', [
             'product' => $products,
             'commandForm' => $commandForm->createView(),
-            'total'=>$total
+            'total'=>$total,
+
         ]);
         
 
